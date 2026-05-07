@@ -26,6 +26,21 @@ No auth required -- FBDL is a text format. This server runs locally and never ta
 - **explain_fbdl** -- Turn an FBDL script into a plain-English step-by-step explanation.
 - **generate_fbdl** (prompt) -- Prompt template that gives the calling LLM the full FBDL grammar so it can generate valid scripts from natural language.
 
+## Claude Code skills (no MCP server needed)
+
+The repo includes standalone Claude Code skills that work without the MCP server. Copy the `.claude/skills/` directory into any project:
+
+```bash
+cp -r /path/to/fbdl-mcp/.claude/skills/ your-project/.claude/skills/
+```
+
+Available skills:
+
+- `/generate-fbdl` -- Generate FBDL scripts from natural language. Embeds the full grammar reference so Claude can produce valid scripts directly.
+- `/validate-fbdl` -- Validate FBDL scripts against the grammar. Includes a complete checklist of structure, entity, action, and reference checks.
+
+These skills embed the entire FBDL spec as prompt context -- no server, no dependencies, no build step.
+
 ## Install
 
 ```bash
