@@ -4,6 +4,20 @@ MCP server for Meta's FBDL (Facebook Developer Language). Lets AI agents generat
 
 No auth required -- FBDL is a text format. This server runs locally and never talks to Meta's infrastructure.
 
+- [fbdl-mcp](#fbdl-mcp)
+  - [What it does](#what-it-does)
+  - [Install](#install)
+  - [Setup with Claude Code](#setup-with-claude-code)
+  - [Setup with OpenAI Codex / agents](#setup-with-openai-codex--agents)
+    - [AGENTS.md snippet](#agentsmd-snippet)
+  - [Example workflow](#example-workflow)
+  - [FBDL quick reference](#fbdl-quick-reference)
+    - [Setup block](#setup-block)
+    - [Action lines](#action-lines)
+    - [Rules](#rules)
+  - [Development](#development)
+  - [Project structure](#project-structure)
+
 ## What it does
 
 - **validate_fbdl** -- Parse and validate FBDL scripts. Catches unknown entities/actions, missing required params, invalid enum values, bad syntax.
@@ -146,7 +160,3 @@ src/
     validator.test.ts # Validator correctness tests
     server.test.ts    # MCP tool integration tests
 ```
-
-## License
-
-ISC

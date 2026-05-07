@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fbdl": {
+      "command": "node",
+      "args": ["/Users/ads/git/fbdl-mcp/dist/server.js"]
+    }
+  }
+}
