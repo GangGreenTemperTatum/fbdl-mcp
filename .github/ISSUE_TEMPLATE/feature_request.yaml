@@ -1,0 +1,37 @@
+---
+name: "Feature Request"
+description: Request a new capability or improvement
+title: "[REQUEST] - <title>"
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the requested behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      description: Include an FBDL example or MCP interaction if helpful.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: drawbacks
+    attributes:
+      label: Drawbacks or risks
+      description: Note any compatibility, validation, or behavior concerns.
+    validations:
+      required: false
+
+  - type: textarea
+    id: unresolved
+    attributes:
+      label: Unresolved questions
+    validations:
+      required: false

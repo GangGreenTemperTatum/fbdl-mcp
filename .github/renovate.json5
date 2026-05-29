@@ -1,0 +1,51 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    "config:base",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":enablePreCommit",
+    ":automergeDigest",
+    ":automergeBranch",
+  ],
+  dependencyDashboardTitle: "Renovate Dashboard 🤖",
+  suppressNotifications: ["prIgnoreNotification"],
+  minimumReleaseAge: "3 days",
+  automerge: true,
+  rebaseWhen: "conflicted",
+  commitBodyTable: true,
+  "pre-commit": {
+    enabled: true,
+  },
+  packageRules: [
+    {
+      matchManagers: ["npm"],
+      matchPackagePatterns: ["^vitest", "^@vitest/"],
+      groupName: "vitest packages",
+      groupSlug: "vitest",
+      separateMinorPatch: true,
+    },
+    {
+      matchManagers: ["npm"],
+      matchPackagePatterns: ["^eslint", "^@eslint/", "^typescript-eslint"],
+      groupName: "eslint packages",
+      groupSlug: "eslint",
+      separateMinorPatch: true,
+    },
+    {
+      matchManagers: ["npm"],
+      matchPackagePatterns: ["^@typescript-eslint/"],
+      groupName: "typescript-eslint packages",
+      groupSlug: "typescript-eslint",
+      separateMinorPatch: true,
+    },
+    {
+      description: "Auto merge non-major updates",
+      matchUpdateTypes: ["minor", "patch"],
+      automerge: true,
+      automergeType: "pr",
+    },
+  ],
+  ignorePaths: [],
+}

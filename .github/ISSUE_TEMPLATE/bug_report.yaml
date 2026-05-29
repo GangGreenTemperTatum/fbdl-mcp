@@ -1,0 +1,52 @@
+---
+name: "Bug Report"
+description: File a bug report
+title: "[BUG] - <title>"
+labels: ["bug", "triage"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Include what you expected to happen.
+      placeholder: |
+        Steps to reproduce:
+        1.
+        2.
+        3.
+
+        Expected behavior:
+        ...
+
+        Actual behavior:
+        ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: fbdl
+    attributes:
+      label: FBDL script
+      description: Include the smallest script that reproduces the issue.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        - Node version:
+        - npm version:
+        - Operating system:
+    validations:
+      required: false
