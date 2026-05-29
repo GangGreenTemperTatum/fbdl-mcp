@@ -1,0 +1,37 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: end-of-file-fixer
+        exclude: ^(dist|node_modules)/
+      - id: trailing-whitespace
+        exclude: ^(dist|node_modules)/
+      - id: check-added-large-files
+        args: [--maxkb=10240]
+      - id: check-json
+      - id: check-yaml
+
+  - repo: local
+    hooks:
+      - id: check-github-actions
+        name: Check GitHub Actions for Pinned Dependencies
+        entry: .hooks/check_pinned_hash_dependencies.py
+        language: python
+        files: ^\.github/workflows/.*\.ya?ml$
+
+      - id: prettier
+        name: Run Prettier
+        entry: .hooks/prettier.sh
+        language: script
+        files: \.(json|json5|ya?ml|ts)$
+
+      - id: npm-check
+        name: Run npm checks
+        entry: npm run check
+        language: system
+        pass_filenames: false
+        files: ^(src/|package(-lock)?\.json|tsconfig\.json|eslint\.config\.js|\.prettierrc)

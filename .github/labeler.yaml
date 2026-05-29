@@ -1,0 +1,63 @@
+---
+# Area Labels
+area/docs:
+  - changed-files:
+      - any-glob-to-any-file: "docs/**/*"
+
+area/examples:
+  - changed-files:
+      - any-glob-to-any-file: "examples/**/*"
+
+area/github:
+  - changed-files:
+      - any-glob-to-any-file: ".github/**/*"
+
+area/hooks:
+  - changed-files:
+      - any-glob-to-any-file: ".hooks/**/*"
+
+area/src:
+  - changed-files:
+      - any-glob-to-any-file: "src/**/*"
+
+area/tests:
+  - changed-files:
+      - any-glob-to-any-file: "tests/**/*"
+      - any-glob-to-any-file: "src/**/*.test.ts"
+
+area/config:
+  - changed-files:
+      - any-glob-to-any-file: "tsconfig.json"
+      - any-glob-to-any-file: "package.json"
+      - any-glob-to-any-file: "eslint.config.js"
+      - any-glob-to-any-file: ".prettierrc*"
+
+# Semantic Type Labels
+type/digest:
+  - head-branch: ["^renovate/"]
+  - head-branch: ["^deps/"]
+
+type/patch:
+  - any: ["title:/^(?:Fix|Patch|Update)/"]
+
+type/minor:
+  - any: ["title:/^(?:Add|Feature|Improve)/"]
+
+type/major:
+  - any: ["title:/^(?:BREAKING)/"]
+
+type/break:
+  - any: ["body:/BREAKING CHANGE:/"]
+
+# Documentation Labels
+type/docs:
+  - changed-files:
+      - any-glob-to-any-file: "docs/**/*"
+      - any-glob-to-any-file: "*.md"
+
+# Core Files Labels
+type/core:
+  - changed-files:
+      - any-glob-to-any-file: "CODEOWNERS"
+      - any-glob-to-any-file: "LICENSE"
+      - any-glob-to-any-file: "README.md"
