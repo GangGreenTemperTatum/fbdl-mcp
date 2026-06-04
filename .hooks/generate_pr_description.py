@@ -61,7 +61,7 @@ def get_diff(base_ref: str, source_ref: str, *, exclude: list[str] | None = None
 def main(
     base_ref: str = "origin/main",
     source_ref: str = "HEAD",
-    generator_id: str = "o3-mini",
+    generator_id: str = "groq/openai/gpt-oss-120b",
     max_diff_lines: int = 1000,
     exclude: list[str] | None = None,
 ) -> None:
