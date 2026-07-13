@@ -10,6 +10,7 @@
 
 [![Tests](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/tests.yaml/badge.svg)](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/tests.yaml)
 [![Pre-Commit](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/pre-commit.yaml/badge.svg)](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/pre-commit.yaml)
+[![Support fellow Meta hackers](https://img.shields.io/badge/Support-fellow%20Meta%20hackers-1877F2?style=flat&logo=github&logoColor=white)](https://github.com/GangGreenTemperTatum/fbdl-mcp/stargazers)
 
 <!-- END_AUTO_BADGES -->
 
@@ -36,7 +37,7 @@ The language spec is pulled live from `https://api.facebook.com/bug_bounty/fbdl_
 - [Standalone agent skills (no MCP server)](#standalone-agent-skills-no-mcp-server)
 - [Example workflow](#example-workflow)
 - [FBDL quick reference](#fbdl-quick-reference)
-- [Star History](#star-history)
+- [Support](#support)
 
 ## What it exposes
 
@@ -244,8 +245,8 @@ Block grammar — the single-line `[setup]` form is **not** valid:
 - Voice switcher (`as PageLabel`) lets a user act as a page they own — only on actions that support it (check `list_actions`).
 - Labels are PascalCase and must be unique within a script.
 
-## Star History
+## Support
 
 [![GitHub stars](https://img.shields.io/github/stars/GangGreenTemperTatum/fbdl-mcp?style=social)](https://github.com/GangGreenTemperTatum/fbdl-mcp/stargazers)
 
-[![Star History Chart](https://api.star-history.com/svg?repos=GangGreenTemperTatum/fbdl-mcp&type=Date)](https://star-history.com/#GangGreenTemperTatum/fbdl-mcp&Date)
+If this project helps your workflow, star the repo and support fellow Meta hackers using it.
