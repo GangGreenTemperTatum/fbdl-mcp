@@ -64,6 +64,16 @@ Sanity check:
 npm run check   # typecheck + lint + format + tests
 ```
 
+## Not Sure?
+
+If you already use an MCP-capable coding agent, you can ask it to install and wire up `fbdl-mcp` for you.
+
+Example prompt:
+
+> Set up the FBDL MCP server in my coding agent. Add an MCP server named `fbdl` using `node /absolute/path/to/fbdl-mcp/dist/server.js`, make sure `FBDL_API_TOKEN` is configured in the MCP server environment, reload MCP servers, then validate a small FBDL script.
+
+If you are unsure where your MCP config lives, ask the agent to use the exact format your client expects.
+
 ## Configure the `FBDL_API_TOKEN`
 
 The token is required for everything: the server fetches the language spec at startup, plus all run-management tools need it.
