@@ -80,6 +80,8 @@ The token is required for everything: the server fetches the language spec at st
 
 Generate one at **https://www.facebook.com/whitehat/fbdl/generate_api_token**.
 
+A minimal `.env.example` is included as a reference for the expected environment variables.
+
 You have two ways to give it to the server. Pick one:
 
 ### Option 1 — Put it in your shell rc (simpler, recommended)
