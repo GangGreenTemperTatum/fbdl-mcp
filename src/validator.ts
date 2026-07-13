@@ -1,6 +1,4 @@
-import { SETUP_ENTITIES, getSetupEntity, getAction } from "./schema.js";
-
-const ENTITY_TYPES = new Set(SETUP_ENTITIES.map((e) => e.type));
+import { getAction, getEntityTypes, getSetupEntity } from "./spec.js";
 
 export interface ValidationError {
   readonly line: number;
@@ -16,27 +14,85 @@ export interface ValidationResult {
 /**
  * Validates an FBDL script for structural correctness.
  * Checks: label definitions before use, known actions/entities, required params,
- * enum values, and basic syntax.
+ * enum values, and block structure.
+ *
+ * Enforces the real FBDL block grammar so that a passing script is one the FBDL
+ * API will also accept: a `[setup]` header on its own line, followed by ONE
+ * entity declaration per line, then (optionally) an `[action]` header on its own
+ * line followed by ONE action per line. Lines beginning with `#` are comments.
+ * The legacy single-line form (`[setup] User A User B ...`) is rejected — the
+ * API does not accept it.
  */
 export function validate(script: string): ValidationResult {
-  const lines = script
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0);
+  const entityTypes = getEntityTypes();
   const errors: ValidationError[] = [];
   const definedLabels = new Set<string>();
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (line === undefined) continue;
+  const rawLines = script.split("\n");
+  let section: "setup" | "action" | null = null;
+  let setupHeaderLine = -1; // line of the most recent `[setup]` header
+  let setupGotEntities = false; // whether that header was followed by declarations
+
+  const closeSetupSection = (): void => {
+    if (setupHeaderLine !== -1 && !setupGotEntities) {
+      errors.push({ line: setupHeaderLine, message: "Empty setup block." });
+    }
+    setupHeaderLine = -1;
+    setupGotEntities = false;
+  };
+
+  for (let i = 0; i < rawLines.length; i++) {
+    const line = (rawLines[i] ?? "").trim();
+    if (line.length === 0 || line.startsWith("#")) continue;
     const lineNum = i + 1;
 
     if (line.startsWith("[setup]")) {
-      validateSetupLine(line, lineNum, definedLabels, errors);
-    } else {
+      closeSetupSection();
+      section = "setup";
+      setupHeaderLine = lineNum;
+      setupGotEntities = false;
+      const inline = line.slice("[setup]".length).trim();
+      if (inline.length > 0) {
+        errors.push({
+          line: lineNum,
+          message:
+            "The [setup] header must be on its own line — put each entity on its own line below it. The single-line setup form is not valid FBDL.",
+        });
+        // The header line had content, so don't also report "Empty setup block".
+        setupGotEntities = true;
+      }
+      continue;
+    }
+
+    if (line.startsWith("[action]")) {
+      closeSetupSection();
+      section = "action";
+      const inline = line.slice("[action]".length).trim();
+      if (inline.length > 0) {
+        errors.push({
+          line: lineNum,
+          message:
+            "The [action] header must be on its own line — put each action on its own line below it.",
+        });
+        validateActionLine(inline, lineNum, definedLabels, errors);
+      }
+      continue;
+    }
+
+    if (section === "setup") {
+      validateSetupContent(line, lineNum, definedLabels, errors, entityTypes);
+      setupGotEntities = true;
+    } else if (section === "action") {
       validateActionLine(line, lineNum, definedLabels, errors);
+    } else {
+      errors.push({
+        line: lineNum,
+        message: "Line is outside any block — a script must start with a [setup] header.",
+      });
     }
   }
+
+  closeSetupSection();
 
   return {
     valid: errors.length === 0,
@@ -45,20 +101,22 @@ export function validate(script: string): ValidationResult {
   };
 }
 
-function validateSetupLine(
-  line: string,
+function validateSetupContent(
+  content: string,
   lineNum: number,
   definedLabels: Set<string>,
   errors: ValidationError[],
+  entityTypes: ReadonlySet<string>,
 ): void {
-  const content = line.slice("[setup]".length).trim();
-  if (content.length === 0) {
-    errors.push({ line: lineNum, message: "Empty setup block." });
-    return;
-  }
-
   const tokens = tokenize(content);
-  const declarations = splitSetupDeclarations(tokens, ENTITY_TYPES);
+  const declarations = splitSetupDeclarations(tokens, entityTypes);
+
+  if (declarations.length > 1) {
+    errors.push({
+      line: lineNum,
+      message: "Only one entity declaration is allowed per line under [setup].",
+    });
+  }
 
   for (const decl of declarations) {
     if (decl.length === 0) continue;
@@ -253,7 +311,7 @@ function tokenize(input: string): string[] {
   return result;
 }
 
-function splitSetupDeclarations(tokens: string[], entityTypes: Set<string>): string[][] {
+function splitSetupDeclarations(tokens: string[], entityTypes: ReadonlySet<string>): string[][] {
   const result: string[][] = [];
   let current: string[] = [];
 

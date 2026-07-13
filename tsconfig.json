@@ -15,6 +15,7 @@
     "declaration": true,
     "sourceMap": true,
     "esModuleInterop": true,
+    "types": ["node"],
     "skipLibCheck": true
   },
   "include": ["src"],

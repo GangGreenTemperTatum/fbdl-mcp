@@ -2,14 +2,17 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { installFixtureSpec } from "./fixtures/loadFixtureSpec.js";
+import { apiErrorResponse } from "../server.js";
+import { FbdlApiError } from "../api.js";
 
 let server: McpServer;
 let client: Client;
 
 beforeAll(async () => {
-  // Dynamic import to get the configured server
-  // We re-create an equivalent server inline since the module calls main()
-  const { SETUP_ENTITIES, ACTIONS, getAction } = await import("../schema.js");
+  installFixtureSpec();
+
+  const { getAction, getActions, getSetupEntities } = await import("../spec.js");
   const { validate } = await import("../validator.js");
   const { z } = await import("zod");
 
@@ -33,8 +36,8 @@ beforeAll(async () => {
       inputSchema: { type: z.string().optional() },
     },
     ({ type }) => {
-      const entities =
-        type !== undefined ? SETUP_ENTITIES.filter((e) => e.type === type) : SETUP_ENTITIES;
+      const all = getSetupEntities();
+      const entities = type !== undefined ? all.filter((e) => e.type === type) : all;
       const text = entities.map((e) => `## ${e.type}\n${e.description}`).join("\n\n");
       return { content: [{ type: "text" as const, text }] };
     },
@@ -47,7 +50,7 @@ beforeAll(async () => {
       inputSchema: { name: z.string().optional(), category: z.string().optional() },
     },
     ({ name, category }) => {
-      let actions = [...ACTIONS];
+      let actions = [...getActions()];
       if (name !== undefined) {
         const exact = getAction(name);
         actions = exact !== undefined ? [exact] : [];
@@ -101,7 +104,7 @@ describe("tool: validate_fbdl", () => {
   it("returns valid for correct script", async () => {
     const result = await client.callTool({
       name: "validate_fbdl",
-      arguments: { script: "[setup] User UserOne" },
+      arguments: { script: "[setup]\n  User UserOne" },
     });
     const text = (result.content as Array<{ type: string; text: string }>)[0]?.text ?? "";
     const parsed = JSON.parse(text) as {
@@ -117,7 +120,7 @@ describe("tool: validate_fbdl", () => {
   it("returns errors for invalid script", async () => {
     const result = await client.callTool({
       name: "validate_fbdl",
-      arguments: { script: "[setup] FakeEntity Foo" },
+      arguments: { script: "[setup]\n  FakeEntity Foo" },
     });
     const text = (result.content as Array<{ type: string; text: string }>)[0]?.text ?? "";
     const parsed = JSON.parse(text) as { valid: boolean; errors: Array<{ message: string }> };
@@ -126,9 +129,13 @@ describe("tool: validate_fbdl", () => {
   });
 
   it("validates a multi-line script end-to-end", async () => {
-    const script = `[setup] User UserOne User UserTwo Friendship with {sender: UserOne, receivers: [UserTwo]}
-UserOne make_post_text PostOne with {place: UserOne, text: 'Hello'}
-UserTwo like_post PostOne`;
+    const script = `[setup]
+  User UserOne
+  User UserTwo
+  Friendship with {sender: UserOne, receivers: [UserTwo]}
+[action]
+  UserOne make_post_text PostOne with {place: UserOne, text: 'Hello'}
+  UserTwo like_post PostOne`;
     const result = await client.callTool({
       name: "validate_fbdl",
       arguments: { script },
@@ -239,5 +246,70 @@ describe("tool: explain_fbdl", () => {
     const text = (result.content as Array<{ type: string; text: string }>)[0]?.text ?? "";
     // Should have exactly 2 lines of explanation
     expect(text.split("\n").filter((l) => l.startsWith("Line:")).length).toBe(2);
+  });
+});
+
+// ── apiErrorResponse ────────────────────────────────────────────────────────
+
+describe("apiErrorResponse", () => {
+  it("surfaces RFC 7807 title, detail, and status from API error body", () => {
+    const body = JSON.stringify({
+      title: "Cannot create FBDL run",
+      detail: "Failed to parse FBDL: bad setup statement.",
+      status: 400,
+    });
+    const error = new FbdlApiError(400, body);
+
+    const result = apiErrorResponse(error);
+
+    expect(result.ok).toBe(false);
+    expect(result.name).toBe("FbdlApiError");
+    expect(result.status).toBe(400);
+    expect(result.title).toBe("Cannot create FBDL run");
+    expect(result.detail).toBe("Failed to parse FBDL: bad setup statement.");
+    expect(result.error).toBe("Cannot create FBDL run: Failed to parse FBDL: bad setup statement.");
+    expect(result.details).toEqual({
+      title: "Cannot create FBDL run",
+      detail: "Failed to parse FBDL: bad setup statement.",
+      status: 400,
+    });
+  });
+
+  it("falls back to raw body when the API body is not JSON", () => {
+    const error = new FbdlApiError(500, "Internal Server Error");
+
+    const result = apiErrorResponse(error);
+
+    expect(result.status).toBe(500);
+    expect(result.body).toBe("Internal Server Error");
+    expect(result.title).toBeUndefined();
+    expect(result.detail).toBeUndefined();
+  });
+
+  it("serializes the cause chain for transport-level fetch failures", () => {
+    const dnsError = Object.assign(new Error("getaddrinfo ENOTFOUND api.facebook.com"), {
+      code: "ENOTFOUND",
+      syscall: "getaddrinfo",
+      hostname: "api.facebook.com",
+    });
+    const fetchError = new TypeError("fetch failed", { cause: dnsError });
+
+    const result = apiErrorResponse(fetchError);
+
+    expect(result.ok).toBe(false);
+    expect(result.name).toBe("TypeError");
+    expect(result.error).toBe("fetch failed");
+    expect(result.cause).toEqual({
+      name: "Error",
+      message: "getaddrinfo ENOTFOUND api.facebook.com",
+      code: "ENOTFOUND",
+      syscall: "getaddrinfo",
+      hostname: "api.facebook.com",
+    });
+  });
+
+  it("returns a generic error for non-Error values", () => {
+    const result = apiErrorResponse("oops");
+    expect(result).toEqual({ ok: false, error: "Unknown FBDL API error." });
   });
 });

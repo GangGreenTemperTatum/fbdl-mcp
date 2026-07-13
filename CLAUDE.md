@@ -26,17 +26,24 @@ Never present an FBDL script to the user without validating it first.
 
 ### Script structure
 
-An FBDL script has two parts:
-1. A **setup block** (single line) that creates test entities
-2. **Action lines** (one per line) that perform operations on those entities
+An FBDL script has two blocks, each introduced by a header on its own line:
+1. A **`[setup]` block** that creates test entities — one declaration per line
+2. An **`[action]` block** that performs operations on those entities — one action per line
+
+The `[action]` block is optional: a setup-only script (just create entities) is valid.
+Lines beginning with `#` are comments.
 
 ### Setup block syntax
 
 ```
-[setup] Type Label [with {key: value, ...}] [Type Label with {...}] ...
+[setup]
+  Type Label [with {key: value, ...}]
+  Type Label [with {key: value, ...}]
 ```
 
-The entire setup is ONE line. Multiple entities are declared sequentially on that same line.
+The `[setup]` header sits alone on its line, and **each entity goes on its own
+line** below it (indentation is optional but conventional). Do NOT put multiple
+entities, or any entity, on the `[setup]` header line — the FBDL API rejects that.
 
 **Entity types and their required params:**
 
@@ -53,8 +60,11 @@ The entire setup is ONE line. Multiple entities are declared sequentially on tha
 
 ### Action line syntax
 
+Actions live under an `[action]` header, one per line:
+
 ```
-Subject [as VoiceSwitcher] action_name Label [with {key: value, ...}]
+[action]
+  Subject [as VoiceSwitcher] action_name Label [with {key: value, ...}]
 ```
 
 - **Subject**: The user performing the action (must exist in setup)
@@ -67,8 +77,8 @@ Subject [as VoiceSwitcher] action_name Label [with {key: value, ...}]
 1. **Setup before use**: Every entity referenced in actions MUST be created in the setup block first
 2. **Users first**: Users must exist before being assigned as owners, members, or roles
 3. **Friendships before friend-dependent actions**: Establish friendships before actions like `group_invite_friends` or `page_invite_friend`
-4. **Single setup line**: The `[setup]` block is always ONE line, no matter how many entities
-5. **One action per line**: Each action goes on its own line after the setup block
+4. **Block format**: A `[setup]` header then (optionally) an `[action]` header, each on its own line; put one entity declaration and one action per line. Never place entities on the `[setup]` header line.
+5. **One action per line**: Each action goes on its own line under the `[action]` header
 6. **PascalCase labels**: Labels should be descriptive PascalCase (UserOne, PageOne, PostOne)
 7. **Voice switcher**: Only use `as` on actions that support it (check with `list_actions`)
 
@@ -87,56 +97,94 @@ Subject [as VoiceSwitcher] action_name Label [with {key: value, ...}]
 
 ## Example scenarios
 
+### Just create three test users (setup-only, no actions)
+
+```
+[setup]
+  User UserOne
+  User UserTwo
+  User UserThree
+```
+
 ### Two friends, one posts on their page, the other comments
 
 ```
-[setup] User Alice User Bob Page AlicePage with {owner: Alice} Friendship with {sender: Alice, receivers: [Bob]}
-Alice as AlicePage make_post_text PagePost with {place: AlicePage, text: 'Check out my new page!'}
-Bob make_comment BobComment with {place: PagePost, text: 'Looks great!', tagged_object: Alice}
-Alice as AlicePage make_comment AliceReply with {place: PagePost, replied_comment: BobComment, text: 'Thanks Bob!'}
+[setup]
+  User Alice
+  User Bob
+  Page AlicePage with {owner: Alice}
+  Friendship with {sender: Alice, receivers: [Bob]}
+[action]
+  Alice as AlicePage make_post_text PagePost with {place: AlicePage, text: 'Check out my new page!'}
+  Bob make_comment BobComment with {place: PagePost, text: 'Looks great!', tagged_object: Alice}
+  Alice as AlicePage make_comment AliceReply with {place: PagePost, replied_comment: BobComment, text: 'Thanks Bob!'}
 ```
 
 ### Private group with moderation
 
 ```
-[setup] User Admin User ModOne User MemberOne User MemberTwo Group TestGroup with {owner: Admin, privacy: private, members: [MemberOne, MemberTwo], moderators: [ModOne]}
-MemberOne make_post_text Post1 with {place: TestGroup, text: 'Hello group!'}
-MemberTwo make_comment Comment1 with {place: Post1, text: 'Welcome!'}
-ModOne mute_member TestGroup with {member: MemberTwo}
-Admin set_post_permission TestGroup with {value: admin}
+[setup]
+  User Admin
+  User ModOne
+  User MemberOne
+  User MemberTwo
+  Group TestGroup with {owner: Admin, privacy: private, members: [MemberOne, MemberTwo], moderators: [ModOne]}
+[action]
+  MemberOne make_post_text Post1 with {place: TestGroup, text: 'Hello group!'}
+  MemberTwo make_comment Comment1 with {place: Post1, text: 'Welcome!'}
+  ModOne mute_member TestGroup with {member: MemberTwo}
+  Admin set_post_permission TestGroup with {value: admin}
 ```
 
 ### Business with page, shop, and employees
 
 ```
-[setup] User Owner User Employee Page BizPage with {owner: Owner} Business Biz with {owner: Owner, employees: [Employee], primary_page: BizPage}
-Owner create_shop Shop with {page: BizPage, business: Biz}
-Owner create_shop_item Item1 with {shop: Shop, approved: true}
-Owner create_ad_account AdAcct with {business: Biz}
-Owner add_ad_advertisers AdAcct with {new_roles: [Employee]}
+[setup]
+  User Owner
+  User Employee
+  Page BizPage with {owner: Owner}
+  Business Biz with {owner: Owner, employees: [Employee], primary_page: BizPage}
+[action]
+  Owner create_shop Shop with {page: BizPage, business: Biz}
+  Owner create_shop_item Item1 with {shop: Shop, approved: true}
+  Owner create_ad_account AdAcct with {business: Biz}
+  Owner add_ad_advertisers AdAcct with {new_roles: [Employee]}
 ```
 
 ### Event with cohosts and invites
 
 ```
-[setup] User Host User Cohost User Guest1 User Guest2 Page EventPage with {owner: Host} Friendship with {sender: Host, receivers: [Guest1, Guest2]}
-Host create_event BigEvent with {place: EventPage, privacy: public, post_permission: anyone}
-Host add_event_cohosts BigEvent with {new_roles: [Cohost, EventPage]}
-Host event_invite BigEvent with {invitees: [Guest1, Guest2]}
-Guest1 going_event BigEvent
-Guest1 make_post_text EventPost with {place: BigEvent, text: 'Excited to attend!'}
+[setup]
+  User Host
+  User Cohost
+  User Guest1
+  User Guest2
+  Page EventPage with {owner: Host}
+  Friendship with {sender: Host, receivers: [Guest1, Guest2]}
+[action]
+  Host create_event BigEvent with {place: EventPage, privacy: public, post_permission: anyone}
+  Host add_event_cohosts BigEvent with {new_roles: [Cohost, EventPage]}
+  Host event_invite BigEvent with {invitees: [Guest1, Guest2]}
+  Guest1 going_event BigEvent
+  Guest1 make_post_text EventPost with {place: BigEvent, text: 'Excited to attend!'}
 ```
 
 ### Bug bounty: testing post audience controls
 
 ```
-[setup] User Poster User FriendOne User FriendTwo User Stranger Friendship with {sender: Poster, receivers: [FriendOne, FriendTwo]}
-Poster make_post_text PublicPost with {place: Poster, text: 'Public post'}
-Poster change_post_audience PublicPost with {audience: specific_friends, friends: [FriendOne]}
-Poster make_post_text FriendsPost with {place: Poster, text: 'Friends only'}
-Poster change_post_audience FriendsPost with {audience: friends}
-Poster make_post_text PrivatePost with {place: Poster, text: 'Only me'}
-Poster change_post_audience PrivatePost with {audience: only_me}
+[setup]
+  User Poster
+  User FriendOne
+  User FriendTwo
+  User Stranger
+  Friendship with {sender: Poster, receivers: [FriendOne, FriendTwo]}
+[action]
+  Poster make_post_text PublicPost with {place: Poster, text: 'Public post'}
+  Poster change_post_audience PublicPost with {audience: specific_friends, friends: [FriendOne]}
+  Poster make_post_text FriendsPost with {place: Poster, text: 'Friends only'}
+  Poster change_post_audience FriendsPost with {audience: friends}
+  Poster make_post_text PrivatePost with {place: Poster, text: 'Only me'}
+  Poster change_post_audience PrivatePost with {audience: only_me}
 ```
 
 ## Development

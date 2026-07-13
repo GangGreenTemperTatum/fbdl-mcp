@@ -1,0 +1,3 @@
+src/__tests__/fixtures/*.json
+dist/
+node_modules/

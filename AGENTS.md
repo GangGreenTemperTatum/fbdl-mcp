@@ -4,7 +4,7 @@
 
 FBDL (Facebook Developer Language) is a domain-specific language used in Meta's MMBRC (bug bounty program). It creates reproducible test environments with whitehat test users, pages, groups, and other Facebook entities. Researchers use FBDL scripts to set up specific scenarios for security testing.
 
-Scripts are executed inside Meta's bug bounty platform -- this MCP server generates and validates them locally. No authentication required.
+Scripts are executed inside Meta's bug bounty platform -- this MCP server generates and validates them locally. The server fetches the FBDL grammar from `https://api.facebook.com/bug_bounty/fbdl_reference/` at startup so it stays current, which requires `FBDL_API_TOKEN` in the environment.
 
 ## Available tools
 
