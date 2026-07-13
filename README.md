@@ -36,6 +36,7 @@ The language spec is pulled live from `https://api.facebook.com/bug_bounty/fbdl_
 - [Standalone agent skills (no MCP server)](#standalone-agent-skills-no-mcp-server)
 - [Example workflow](#example-workflow)
 - [FBDL quick reference](#fbdl-quick-reference)
+- [Star History](#star-history)
 
 ## What it exposes
 
@@ -243,6 +244,10 @@ Block grammar — the single-line `[setup]` form is **not** valid:
 - Voice switcher (`as PageLabel`) lets a user act as a page they own — only on actions that support it (check `list_actions`).
 - Labels are PascalCase and must be unique within a script.
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=GangGreenTemperTatum/fbdl-mcp&type=Date)](https://www.star-history.com/#GangGreenTemperTatum/fbdl-mcp&Date)
+
 ---
 
 ## Star History
@@ -252,4 +257,3 @@ Block grammar — the single-line `[setup]` form is **not** valid:
 By watching the repo, you can also be notified of any upcoming releases. Support fellow hackers.
 
 [![Star history graph](https://api.star-history.com/svg?repos=GangGreenTemperTatum/fbdl-mcp&type=Date)](https://star-history.com/#GangGreenTemperTatum/fbdl-mcp&&Date)
-
