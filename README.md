@@ -20,7 +20,7 @@ The language spec is pulled live from `https://api.facebook.com/bug_bounty/fbdl_
 - [Setup with OpenAI Codex / other MCP clients](#setup-with-openai-codex--other-mcp-clients)
 - [Rules the server enforces on runs](#rules-the-server-enforces-on-runs)
 - [Behind an HTTP proxy](#behind-an-http-proxy)
-- [Standalone Claude Code skills (no MCP server)](#standalone-claude-code-skills-no-mcp-server)
+- [Standalone agent skills (no MCP server)](#standalone-agent-skills-no-mcp-server)
 - [Example workflow](#example-workflow)
 - [FBDL quick reference](#fbdl-quick-reference)
 - [Development](#development)
@@ -141,7 +141,7 @@ Then in Claude Code, things like these all work:
 
 > "Run this script as an FBDL run and tell me the resulting user IDs."
 
-For the operational rules around running scripts, the repo also ships a `use-fbdl-mcp` skill that Claude Code will load automatically — see [Standalone Claude Code skills](#standalone-claude-code-skills-no-mcp-server).
+For the operational rules around running scripts, the repo also ships a `use-fbdl-mcp` skill for agent-side setup — see [Standalone agent skills](#standalone-agent-skills-no-mcp-server).
 
 ## Setup with OpenAI Codex / other MCP clients
 
@@ -179,17 +179,15 @@ export HTTP_PROXY="http://localhost:10054"
 
 (or include them in the MCP `env` block). No-op when no proxy is configured.
 
-## Standalone Claude Code skills (no MCP server)
+## Standalone agent skills (no MCP server)
 
-The repo ships three Claude Code skills under `.claude/skills/`. Copy them into any project:
+The repo ships the same three standalone skills for both Claude Code and Codex:
 
-```bash
-cp -r /path/to/fbdl-mcp/.claude/skills/ your-project/.claude/skills/
-```
-
-- **`/generate-fbdl`** — generate scripts from natural language. Embeds the grammar in the prompt, so it works without the MCP server.
-- **`/validate-fbdl`** — validate scripts against the grammar with a structural checklist.
-- **`/use-fbdl-mcp`** — operations manual for this MCP server: which tool to call when, the run rules, recovery from common failures. Useful even with the server installed.
+- Claude Code: copy `.claude/skills/` into your project
+- Codex: copy `.codex/skills/` into your project
+- `generate-fbdl` — generate scripts from natural language
+- `validate-fbdl` — validate scripts against the grammar
+- `use-fbdl-mcp` — operations manual for the MCP workflow and run rules
 
 ## Example workflow
 
@@ -272,4 +270,8 @@ src/
   generate-fbdl.md           # Standalone: NL → FBDL with grammar embedded
   validate-fbdl.md           # Standalone: validation checklist
   use-fbdl-mcp.md            # Operations manual for the MCP server
+.codex/skills/
+  generate-fbdl/SKILL.md     # Codex skill: NL → FBDL with current block grammar
+  validate-fbdl/SKILL.md     # Codex skill: validation checklist
+  use-fbdl-mcp/SKILL.md      # Codex skill: MCP workflow and run rules
 ```
