@@ -1,5 +1,18 @@
 # fbdl-mcp
 
+<div align="center">
+
+**Built by hackers, for hackers**
+
+</div>
+
+<!-- BEGIN_AUTO_BADGES -->
+
+[![Tests](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/tests.yaml/badge.svg)](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/tests.yaml)
+[![Pre-Commit](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/pre-commit.yaml/badge.svg)](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/pre-commit.yaml)
+
+<!-- END_AUTO_BADGES -->
+
 An MCP server for Meta's FBDL (Facebook Developer Language) — the DSL bug bounty researchers use to spin up reproducible test scenarios (whitehat users, pages, groups, posts, …) inside Meta's MMBRC platform.
 
 The server lets AI agents:
@@ -23,8 +36,6 @@ The language spec is pulled live from `https://api.facebook.com/bug_bounty/fbdl_
 - [Standalone agent skills (no MCP server)](#standalone-agent-skills-no-mcp-server)
 - [Example workflow](#example-workflow)
 - [FBDL quick reference](#fbdl-quick-reference)
-- [Development](#development)
-- [Project structure](#project-structure)
 
 ## What it exposes
 
@@ -210,6 +221,8 @@ The repo ships the same three standalone skills for both Claude Code and Codex:
 6. Agent polls `get_fbdl_run` with the returned id until the run finishes, then hands the user the resulting user IDs / passwords / fbids.
 7. After 30 seconds the agent can submit the next run, if needed.
 
+---
+
 ## FBDL quick reference
 
 Block grammar — the single-line `[setup]` form is **not** valid:
@@ -230,48 +243,13 @@ Block grammar — the single-line `[setup]` form is **not** valid:
 - Voice switcher (`as PageLabel`) lets a user act as a page they own — only on actions that support it (check `list_actions`).
 - Labels are PascalCase and must be unique within a script.
 
-## Development
+---
 
-```bash
-npm run build         # compile TypeScript to dist/ (excludes tests)
-npm run test          # vitest
-npm run lint          # eslint with strict TypeScript rules
-npm run format        # prettier
-npm run typecheck     # tsc --noEmit (covers tests too)
-npm run check         # all of the above
-```
+## Star History
 
-## Project structure
+[![GitHub stars](https://img.shields.io/github/stars/GangGreenTemperTatum/fbdl-mcp&?style=social)](https://github.com/GangGreenTemperTatum/fbdl-mcp&/stargazers)
 
-```
-src/
-  schema.ts                  # FBDL Param / SetupEntity / Action types
-  spec.ts                    # Runtime spec singleton (entities + actions)
-  specParser.ts              # API JSON → SetupEntity[]/Action[] converter
-  specLoader.ts              # Loads the spec from the API with disk-cache fallback
-  validator.ts               # FBDL script parser and validator (block grammar)
-  runGuard.ts                # Mutex + cooldown gating create_fbdl_run
-  proxy.ts                   # Wires Node's global fetch through HTTP(S)_PROXY
-  api.ts                     # FBDL API client (reference + runs)
-  server.ts                  # MCP server (tools, resource, prompt)
-  __tests__/
-    fixtures/
-      fbdl_reference.json    # Committed snapshot of the API response
-      loadFixtureSpec.ts     # Helper that installs the snapshot into the spec
-    schema.test.ts
-    specParser.test.ts
-    specLoader.test.ts
-    validator.test.ts
-    server.test.ts
-    runGuard.test.ts
-    proxy.test.ts
-    api.test.ts
-.claude/skills/
-  generate-fbdl.md           # Standalone: NL → FBDL with grammar embedded
-  validate-fbdl.md           # Standalone: validation checklist
-  use-fbdl-mcp.md            # Operations manual for the MCP server
-.codex/skills/
-  generate-fbdl/SKILL.md     # Codex skill: NL → FBDL with current block grammar
-  validate-fbdl/SKILL.md     # Codex skill: validation checklist
-  use-fbdl-mcp/SKILL.md      # Codex skill: MCP workflow and run rules
-```
+By watching the repo, you can also be notified of any upcoming releases. Support fellow hackers.
+
+[![Star history graph](https://api.star-history.com/svg?repos=GangGreenTemperTatum/fbdl-mcp&type=Date)](https://star-history.com/#GangGreenTemperTatum/fbdl-mcp&&Date)
+
