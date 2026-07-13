@@ -246,14 +246,6 @@ Block grammar — the single-line `[setup]` form is **not** valid:
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=GangGreenTemperTatum/fbdl-mcp&type=Date)](https://www.star-history.com/#GangGreenTemperTatum/fbdl-mcp&Date)
+[![GitHub stars](https://img.shields.io/github/stars/GangGreenTemperTatum/fbdl-mcp?style=social)](https://github.com/GangGreenTemperTatum/fbdl-mcp/stargazers)
 
----
-
-## Star History
-
-[![GitHub stars](https://img.shields.io/github/stars/GangGreenTemperTatum/fbdl-mcp&?style=social)](https://github.com/GangGreenTemperTatum/fbdl-mcp&/stargazers)
-
-By watching the repo, you can also be notified of any upcoming releases. Support fellow hackers.
-
-[![Star history graph](https://api.star-history.com/svg?repos=GangGreenTemperTatum/fbdl-mcp&type=Date)](https://star-history.com/#GangGreenTemperTatum/fbdl-mcp&&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=GangGreenTemperTatum/fbdl-mcp&type=Date)](https://star-history.com/#GangGreenTemperTatum/fbdl-mcp&Date)
