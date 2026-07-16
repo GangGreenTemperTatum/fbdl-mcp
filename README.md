@@ -66,7 +66,7 @@ The language spec is pulled live from `https://api.facebook.com/bug_bounty/fbdl_
 ## Install
 
 ```bash
-git clone <repo-url> && cd fbdl-mcp
+git clone https://github.com/GangGreenTemperTatum/fbdl-mcp.git && cd fbdl-mcp
 npm install
 npm run build
 ```
