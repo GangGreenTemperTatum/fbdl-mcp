@@ -3,18 +3,21 @@
 <div align="center">
 
 **Built by hackers, for hackers**
-
-</div>
+<br>
+_See the accompying Meta [blog post release](https://bugbounty.meta.com/blog/fbdl-goes-agentic/)_
 
 <!-- BEGIN_AUTO_BADGES -->
 
+[![Release](https://img.shields.io/github/v/release/GangGreenTemperTatum/fbdl-mcp?display_name=tag)](https://github.com/GangGreenTemperTatum/fbdl-mcp/releases/latest)
 [![Tests](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/tests.yaml/badge.svg)](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/tests.yaml)
 [![Pre-Commit](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/pre-commit.yaml/badge.svg)](https://github.com/GangGreenTemperTatum/fbdl-mcp/actions/workflows/pre-commit.yaml)
 [![Support fellow Meta hackers](https://img.shields.io/badge/Support-fellow%20Meta%20hackers-1877F2?style=flat&logo=github&logoColor=white)](https://github.com/GangGreenTemperTatum/fbdl-mcp/stargazers)
 
 <!-- END_AUTO_BADGES -->
 
-An MCP server for Meta's FBDL (Facebook Developer Language) — the DSL bug bounty researchers use to spin up reproducible test scenarios (whitehat users, pages, groups, posts, …) inside Meta's MMBRC platform.
+</div>
+
+An MCP server for Meta's [FBDL (Facebook Developer Language)](https://www.facebook.com/whitehat/fbdl) — the DSL bug bounty researchers use to spin up reproducible test scenarios (whitehat users, pages, groups, posts, …) inside Meta's MMBRC platform.
 
 The server lets AI agents:
 
